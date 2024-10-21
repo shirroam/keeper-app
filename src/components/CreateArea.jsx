@@ -1,44 +1,65 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
+import AddIcon from '@mui/icons-material/Add';
+import { Fab, Zoom } from "@mui/material";
 
 function CreateArea(props) {
-    const [note, setNote] = useState({
-        title: "",
-        content: ""
+  const [note, setNote] = useState({
+    title: "",
+    content: ""
+  });
+
+  const [click, setClick] = useState(false);
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+
+    setNote(prevNote => {
+      return {
+        ...prevNote,
+        [name]: value
+      };
     });
-
-    function handleChange(event) {
-        const {name, value} = event.target;
-
-        setNote((prevNote) => {
-            if(name === "title") {
-                return {
-                    title: value,
-                    content: prevNote.content
-                };
-            } else {
-                return {
-                    title: prevNote.title,
-                    content: value
-                };
-            }
-        })
-    }
-
-    function submitNote(event) {
-        console.log(note);
-        props.onAdd(note);
-        event.preventDefault();
-    }
-
-    return (
-      <div>
-        <form>
-          <input onChange={handleChange} value={note.title} name="title" placeholder="Title" />
-          <textarea onChange={handleChange} value={note.content} name="content" placeholder="Take a note..." rows="3" />
-          <button onClick={submitNote}>Add</button>
-        </form>
-      </div>
-    );
   }
-  
-  export default CreateArea;
+
+  function submitNote(event) {
+    props.onAdd(note);
+    setNote({
+      title: "",
+      content: ""
+    });
+    event.preventDefault();
+    setClick(false);
+  }
+
+  function handleClick() {
+    setClick(true)
+  }
+
+  return (
+    <div>
+      <form className="create-note">
+        {click && <input
+          name="title"
+          onChange={handleChange}
+          value={note.title}
+          placeholder="Title"
+        />}
+        <textarea
+          name="content"
+          onChange={handleChange}
+          onClick={handleClick}
+          value={note.content}
+          placeholder="Take a note..."
+          rows={click ? "3" : "1"}
+        />
+        <Zoom in={click ? true : false} >
+          <Fab onClick={submitNote}>
+            <AddIcon />
+          </Fab>
+        </Zoom>
+      </form>
+    </div>
+  );
+}
+
+export default CreateArea;
